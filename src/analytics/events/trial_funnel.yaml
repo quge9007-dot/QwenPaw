@@ -1,0 +1,84 @@
+# dtcoder 9.9 尝鲜价套餐 — 转化漏斗埋点事件 schema (SSOT)
+#
+# 本文件是 Task 7 埋点与转化数据看板的 single source of truth。
+# Python 侧由 src/analytics/trial_funnel.py 的 load_schema()/validate_event()
+# 解析并校验；测试见 tests/analytics/test_trial_funnel.py。
+#
+# 仓库约定：Python 工程，src/ 平铺布局，pytest 测试镜像 src/ 结构。
+
+version: 1
+plan_code: dtcoder_trial_9_9
+description: >
+  dtcoder 9.9 尝鲜价套餐的 6 阶段转化漏斗埋点事件 schema。
+  阶段顺序：view -> purchase -> activate -> renew_prompt -> convert_to_paid / churn。
+  每个事件必填 user_id / plan_code / ts，可选 value（金额，CNY）。
+
+# 北极星指标：purchase -> convert_to_paid 转化率，目标线 15%。
+north_star:
+  metric: conversion_rate          # convert_to_paid 用户数 / purchase 用户数
+  target: 0.15
+  unit: ratio
+
+# 漏斗阶段（按生命周期顺序）
+funnel_stages:
+  - view              # 用户看到 9.9 套餐页
+  - purchase          # 购买 9.9 尝鲜套餐
+  - activate          # 套餐激活 / 开始使用
+  - renew_prompt      # 到期续费提醒触达
+  - convert_to_paid   # 转化为正价付费用户
+  - churn             # 流失（提醒后未转化）
+
+# 字段定义（所有事件共享）
+fields:
+  user_id:
+    type: str
+    required: true
+    description: 用户唯一标识，非空字符串
+    constraint: "len >= 1"
+  plan_code:
+    type: str
+    required: true
+    description: 套餐编码，固定 dtcoder_trial_9_9
+    constraint: "== 'dtcoder_trial_9_9'"
+  ts:
+    type: datetime
+    required: true
+    description: 事件发生时间，ISO-8601 字符串（含时区，Z 或 +08:00）
+    constraint: "ISO-8601, e.g. 2026-07-21T06:00:00Z"
+  value:
+    type: float
+    required: false
+    description: 金额（CNY），仅 purchase/convert_to_paid 等阶段携带；缺省 0
+    constraint: ">= 0"
+
+# 6 个事件类型定义
+events:
+  view:
+    description: 用户浏览 / 看到 9.9 尝鲜套餐落地页或购买入口
+    required: [user_id, plan_code, ts]
+    optional: [value]
+
+  purchase:
+    description: 用户完成 9.9 尝鲜套餐下单支付
+    required: [user_id, plan_code, ts]
+    optional: [value]            # 通常 9.9
+
+  activate:
+    description: 套餐激活，用户开始享受尝鲜权益
+    required: [user_id, plan_code, ts]
+    optional: [value]
+
+  renew_prompt:
+    description: 到期前续费提醒触达（站内信 / 推送 / 邮件）
+    required: [user_id, plan_code, ts]
+    optional: [value]
+
+  convert_to_paid:
+    description: 用户由尝鲜套餐转化为正价付费订阅
+    required: [user_id, plan_code, ts]
+    optional: [value]            # 正价订阅金额，用于 ARPU 计算
+
+  churn:
+    description: 用户未转化而流失（提醒后未续费，套餐过期）
+    required: [user_id, plan_code, ts]
+    optional: [value]
