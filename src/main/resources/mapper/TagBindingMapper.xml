@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qwenpaw.usermanagement.dao.mapper.TagBindingMapper">
+
+    <resultMap id="TagBindingResultMap" type="TagBindingDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="tag_id" property="tagId" jdbcType="VARCHAR"/>
+        <result column="source" property="source" jdbcType="INTEGER"/>
+        <result column="pk_id" property="pkId" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="TagBindingDO">
+        INSERT INTO tag_binding (user_id, tag_id, source, pk_id, gmt_create, gmt_modified)
+        VALUES (#{userId}, #{tagId}, #{source}, #{pkId}, #{gmtCreate}, #{gmtModified})
+    </insert>
+
+    <delete id="deleteByUserIdAndTagId">
+        DELETE FROM tag_binding WHERE user_id = #{userId} AND tag_id = #{tagId}
+    </delete>
+
+    <select id="selectByUserIdAndTagId" resultMap="TagBindingResultMap">
+        SELECT * FROM tag_binding WHERE user_id = #{userId} AND tag_id = #{tagId}
+    </select>
+
+    <select id="selectByUserId" resultMap="TagBindingResultMap">
+        SELECT * FROM tag_binding WHERE user_id = #{userId} ORDER BY gmt_create DESC
+    </select>
+
+    <select id="selectByTagId" resultMap="TagBindingResultMap">
+        SELECT * FROM tag_binding WHERE tag_id = #{tagId} ORDER BY gmt_create DESC
+    </select>
+
+    <select id="countByTagId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM tag_binding WHERE tag_id = #{tagId}
+    </select>
+
+</mapper>

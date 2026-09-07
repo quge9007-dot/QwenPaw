@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qwenpaw.usermanagement.dao.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="UserDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="tag_count" property="tagCount" jdbcType="INTEGER"/>
+        <result column="pk_id" property="pkId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="UserDO">
+        INSERT INTO user_info (user_id, nickname, avatar_url, status, tag_count, pk_id, gmt_create, gmt_modified)
+        VALUES (#{userId}, #{nickname}, #{avatarUrl}, #{status}, #{tagCount}, #{pkId}, #{gmtCreate}, #{gmtModified})
+    </insert>
+
+    <update id="updateById" parameterType="UserDO">
+        UPDATE user_info SET nickname = #{nickname}, avatar_url = #{avatarUrl}, status = #{status}, tag_count = #{tagCount}, gmt_modified = #{gmtModified}
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM user_info WHERE user_id = #{userId}
+    </delete>
+
+    <select id="selectById" resultMap="UserResultMap">
+        SELECT * FROM user_info WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectAll" resultMap="UserResultMap">
+        SELECT * FROM user_info ORDER BY gmt_create DESC
+    </select>
+
+    <select id="selectByStatus" resultMap="UserResultMap">
+        SELECT * FROM user_info WHERE status = #{status} ORDER BY gmt_create DESC
+    </select>
+
+    <select id="countByStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM user_info WHERE status = #{status}
+    </select>
+
+    <select id="selectByTagIds" resultMap="UserResultMap">
+        SELECT DISTINCT u.* FROM user_info u
+        INNER JOIN tag_binding tb ON u.user_id = tb.user_id
+        WHERE tb.tag_id IN
+        <foreach collection="tagIds" item="tagId" open="(" separator="," close=")">
+            #{tagId}
+        </foreach>
+        ORDER BY u.gmt_create DESC
+    </select>
+
+</mapper>
