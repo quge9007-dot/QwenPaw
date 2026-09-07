@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qwenpaw.usermanagement.dao.mapper.UserBehaviorMapper">
+
+    <resultMap id="UserBehaviorResultMap" type="UserBehaviorDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="behavior_type" property="behaviorType" jdbcType="VARCHAR"/>
+        <result column="behavior_data" property="behaviorData" jdbcType="VARCHAR"/>
+        <result column="pk_id" property="pkId" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="UserBehaviorDO">
+        INSERT INTO user_behavior (user_id, behavior_type, behavior_data, pk_id, gmt_create, gmt_modified)
+        VALUES (#{userId}, #{behaviorType}, #{behaviorData}, #{pkId}, #{gmtCreate}, #{gmtModified})
+    </insert>
+
+    <select id="selectByUserId" resultMap="UserBehaviorResultMap">
+        SELECT * FROM user_behavior WHERE user_id = #{userId} ORDER BY gmt_create DESC
+    </select>
+
+    <select id="selectByBehaviorType" resultMap="UserBehaviorResultMap">
+        SELECT * FROM user_behavior WHERE behavior_type = #{behaviorType} ORDER BY gmt_create DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qwenpaw.usermanagement.dao.mapper.TagMapper">
+
+    <resultMap id="TagResultMap" type="TagDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="tag_id" property="tagId" jdbcType="VARCHAR"/>
+        <result column="tag_name" property="tagName" jdbcType="VARCHAR"/>
+        <result column="tag_code" property="tagCode" jdbcType="VARCHAR"/>
+        <result column="category_id" property="categoryId" jdbcType="VARCHAR"/>
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+        <result column="tag_level" property="tagLevel" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="sort_order" property="sortOrder" jdbcType="INTEGER"/>
+        <result column="pk_id" property="pkId" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="TagDO">
+        INSERT INTO tag_info (tag_id, tag_name, tag_code, category_id, parent_id, tag_level, status, sort_order, pk_id, gmt_create, gmt_modified)
+        VALUES (#{tagId}, #{tagName}, #{tagCode}, #{categoryId}, #{parentId}, #{tagLevel}, #{status}, #{sortOrder}, #{pkId}, #{gmtCreate}, #{gmtModified})
+    </insert>
+
+    <update id="updateById" parameterType="TagDO">
+        UPDATE tag_info SET tag_name = #{tagName}, tag_code = #{tagCode}, category_id = #{categoryId}, parent_id = #{parentId}, tag_level = #{tagLevel}, status = #{status}, sort_order = #{sortOrder}, gmt_modified = #{gmtModified}
+        WHERE tag_id = #{tagId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM tag_info WHERE tag_id = #{tagId}
+    </delete>
+
+    <select id="selectById" resultMap="TagResultMap">
+        SELECT * FROM tag_info WHERE tag_id = #{tagId}
+    </select>
+
+    <select id="selectAll" resultMap="TagResultMap">
+        SELECT * FROM tag_info ORDER BY sort_order ASC, gmt_create DESC
+    </select>
+
+    <select id="selectByCategoryId" resultMap="TagResultMap">
+        SELECT * FROM tag_info WHERE category_id = #{categoryId} AND status = 1 ORDER BY sort_order ASC
+    </select>
+
+    <select id="selectByParentId" resultMap="TagResultMap">
+        SELECT * FROM tag_info WHERE parent_id = #{parentId} ORDER BY sort_order ASC
+    </select>
+
+    <select id="countByCategoryId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM tag_info WHERE category_id = #{categoryId}
+    </select>
+
+</mapper>

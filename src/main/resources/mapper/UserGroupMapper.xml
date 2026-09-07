@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qwenpaw.usermanagement.dao.mapper.UserGroupMapper">
+
+    <resultMap id="UserGroupResultMap" type="UserGroupDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="group_id" property="groupId" jdbcType="VARCHAR"/>
+        <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
+        <result column="group_desc" property="groupDesc" jdbcType="VARCHAR"/>
+        <result column="match_type" property="matchType" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="pk_id" property="pkId" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="UserGroupDO">
+        INSERT INTO user_group (group_id, group_name, group_desc, match_type, status, pk_id, gmt_create, gmt_modified)
+        VALUES (#{groupId}, #{groupName}, #{groupDesc}, #{matchType}, #{status}, #{pkId}, #{gmtCreate}, #{gmtModified})
+    </insert>
+
+    <update id="updateById" parameterType="UserGroupDO">
+        UPDATE user_group SET group_name = #{groupName}, group_desc = #{groupDesc}, match_type = #{matchType}, status = #{status}, gmt_modified = #{gmtModified}
+        WHERE group_id = #{groupId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM user_group WHERE group_id = #{groupId}
+    </delete>
+
+    <select id="selectById" resultMap="UserGroupResultMap">
+        SELECT * FROM user_group WHERE group_id = #{groupId}
+    </select>
+
+    <select id="selectAll" resultMap="UserGroupResultMap">
+        SELECT * FROM user_group ORDER BY gmt_create DESC
+    </select>
+
+    <select id="selectByStatus" resultMap="UserGroupResultMap">
+        SELECT * FROM user_group WHERE status = #{status} ORDER BY gmt_create DESC
+    </select>
+
+</mapper>
